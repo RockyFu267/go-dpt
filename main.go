@@ -1,4 +1,4 @@
-package godpt
+package main
 
 import "fmt"
 

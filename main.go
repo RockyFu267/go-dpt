@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"os"
 	"sync"
 	"time"
 )
@@ -26,7 +28,6 @@ func main() {
 	go timetick()
 	go addByteChan(a, chTmp)
 	go consumeByteCh(chTmp)
-
 	fmt.Println(len(strTMP))
 	wg.Wait()
 	fmt.Println(len(chTmp), "-------")
@@ -39,9 +40,9 @@ func timetick() {
 		time.Sleep(1 * time.Second)
 		i = i + 1
 		fmt.Println(i, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-		if i > 10 {
-			break
-		}
+		// if i > 10 {
+		// 	break
+		// }
 	}
 }
 
@@ -58,11 +59,27 @@ func addByteChan(a string, chTmp chan string) {
 	fmt.Println("pudTime =", pudTime)
 }
 
+func buffiowrite(input string) {
+	file, err := os.OpenFile("./test.txt", os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0777)
+	if err != nil {
+		fmt.Printf("打开文件失败,错误为:%v\n", err)
+		return
+	}
+	defer file.Close() //关闭文件
+
+	writer := bufio.NewWriter(file) //往文件里面写入内容，得到了一个writer对象
+	for i := 0; i < 10; i++ {       //循环写入10行
+		writer.WriteString(input) //将数据写入缓存
+	}
+	writer.Flush() //将缓存中内容的写入文件
+}
+
 func consumeByteCh(chTmp chan string) {
 	start := time.Now()
 	defer wg.Done()
 	for {
-		<-chTmp
+		res := <-chTmp
+		buffiowrite(res)
 		i1 = i1 + 1
 		if i1%400 == 0 {
 			fmt.Println(i1, "我在消费")

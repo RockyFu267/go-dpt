@@ -27,7 +27,7 @@ func main() {
 	var strTMP string
 	go timetick()
 	go addByteChan(a, chTmp)
-	go consumeByteCh(chTmp)
+	// go consumeByteCh(chTmp)
 	fmt.Println(len(strTMP))
 	wg.Wait()
 	fmt.Println(len(chTmp), "-------")
@@ -68,9 +68,9 @@ func buffiowrite(input string) {
 	defer file.Close() //关闭文件
 
 	writer := bufio.NewWriter(file) //往文件里面写入内容，得到了一个writer对象
-	for i := 0; i < 10; i++ {       //循环写入10行
-		writer.WriteString(input) //将数据写入缓存
-	}
+	// for i := 0; i < 10; i++ {       //循环写入10行
+	writer.WriteString(input) //将数据写入缓存
+	// }
 	writer.Flush() //将缓存中内容的写入文件
 }
 
@@ -78,8 +78,6 @@ func consumeByteCh(chTmp chan string) {
 	start := time.Now()
 	defer wg.Done()
 	for {
-		res := <-chTmp
-		buffiowrite(res)
 		i1 = i1 + 1
 		if i1%400 == 0 {
 			fmt.Println(i1, "我在消费")
